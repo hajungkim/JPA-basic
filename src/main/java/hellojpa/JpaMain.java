@@ -15,9 +15,13 @@ public class JpaMain {
         tx.begin();
 
         try {
+            /*
+            객체에 set만 했는데 update가 되는 이유
+            JPA를 통해서 엔티티를 가져오면 JPA가 관리를 한다.
+            그래서 객체에 대한 변경사항이 있다는게 발견되면 update 쿼리를 날린다.
+             */
             Member findMember = em.find(Member.class, 1L);
-            System.out.println("findMember.id = " + findMember.getId());
-            System.out.println("findMember.name = " + findMember.getName());
+            findMember.setName("HelloJPA");
 
             tx.commit();
         } catch (Exception e) {
