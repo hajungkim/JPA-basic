@@ -4,25 +4,26 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.List;
 
 public class JpaMain {
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
 
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = emf.createEntityManager();   // 요청이 오면 엔티티 매니저를 통해서 작업
 
-        EntityTransaction tx = em.getTransaction();
+        EntityTransaction tx = em.getTransaction();     // JPA의 모든 데이터 변경은 트랜잭션 안에서 이루어져야 한다.
         tx.begin();
 
         try {
-            /*
-            객체에 set만 했는데 update가 되는 이유
-            JPA를 통해서 엔티티를 가져오면 JPA가 관리를 한다.
-            그래서 객체에 대한 변경사항이 있다는게 발견되면 update 쿼리를 날린다.
-             */
-            Member findMember = em.find(Member.class, 1L);
-            findMember.setName("HelloJPA");
-
+//            Member findMember = em.find(Member.class, 1L);
+            List<Member> result = em.createQuery("select m from Member as m", Member.class)
+                    .setFirstResult(5)
+                    .setMaxResults(8)
+                    .getResultList();
+            for (Member member : result) {
+                System.out.println("member.name = " + member.getName());
+            }
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
