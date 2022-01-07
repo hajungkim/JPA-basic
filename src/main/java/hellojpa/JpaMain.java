@@ -10,20 +10,27 @@ public class JpaMain {
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
 
-        EntityManager em = emf.createEntityManager();   // 요청이 오면 엔티티 매니저를 통해서 작업
+        EntityManager em = emf.createEntityManager();
 
-        EntityTransaction tx = em.getTransaction();     // JPA의 모든 데이터 변경은 트랜잭션 안에서 이루어져야 한다.
+        EntityTransaction tx = em.getTransaction();
         tx.begin();
 
         try {
-//            Member findMember = em.find(Member.class, 1L);
-            List<Member> result = em.createQuery("select m from Member as m", Member.class)
-                    .setFirstResult(5)
-                    .setMaxResults(8)
-                    .getResultList();
-            for (Member member : result) {
-                System.out.println("member.name = " + member.getName());
-            }
+            // 비영속
+            Member member = new Member();
+            member.setId(101L);
+            member.setName("HelloJPA");
+
+            // 영속
+            System.out.println("===Before===");
+            em.persist(member);                // 1차 캐시에 저장됨
+            System.out.println("===After===");
+
+            Member findMember = em.find(Member.class, 101L);    // DB에 있는것이 아니라 1차캐시에서 조회해서 가져온다(select 출력X)
+
+            System.out.println("findMember.id = " + findMember.getId());
+            System.out.println("findMember.name = " + findMember.getName());
+
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
