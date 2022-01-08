@@ -16,21 +16,15 @@ public class JpaMain {
         tx.begin();
 
         try {
-            // 비영속
-            Member member = new Member();
-            member.setId(101L);
-            member.setName("HelloJPA");
+            // 트랜잭션을 지원하는 쓰기 지연
+            Member member1 = new Member(150L, "A");
+            Member member2 = new Member(160L, "B");
 
-            // 영속
-            System.out.println("===Before===");
-            em.persist(member);                // 1차 캐시에 저장됨
-            System.out.println("===After===");
+            em.persist(member1);
+            em.persist(member2);
+            // 여기까지 INSERT SQL을 데이터베이스에 보내지 않는다.
 
-            Member findMember = em.find(Member.class, 101L);    // DB에 있는것이 아니라 1차캐시에서 조회해서 가져온다(select 출력X)
-
-            System.out.println("findMember.id = " + findMember.getId());
-            System.out.println("findMember.name = " + findMember.getName());
-
+            // 커밋하는 순간 데이터베이스에 INSERT SQL을 보낸다.
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
