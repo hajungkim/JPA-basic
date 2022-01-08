@@ -16,18 +16,15 @@ public class JpaMain {
         tx.begin();
 
         try {
-            // 플러시(flush)
+            // 준영속 상태
             /*
-            - 영속성 컨텍스트의 변경내용을 DB에 반영하는 것
-            플러시 발생 시, - 변경 감지
-                          - 수정된 엔티티 쓰기 지연 SQL 저장소에 등록
-                          - 쓰기 지연 SQL 저장소의 쿼리를 DB에 전송 (등록,수정,삭제 쿼리)
+            - 영속 상태의 엔티티가 영속성 컨텍스트에서 분리(detached)
+            - 영속성 컨텍스트가 제공하는 기능을 사용 못함
              */
+            Member member = em.find(Member.class, 150L);
+            member.setName("AAAAA");
 
-            Member member = new Member(200L, "member200");
-            em.persist(member);
-
-            em.flush();     // 커밋되기전에 쿼리 호출. 원래 플러시는 트랜잭션 커밋 시 자동 호출
+            em.detach(member);  // 엔티티를 분리했기 때문에 update 쿼리가 실행되지 않는다.
 
             System.out.println("==================");
             tx.commit();
