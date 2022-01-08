@@ -16,17 +16,20 @@ public class JpaMain {
         tx.begin();
 
         try {
-            // 변경 감지
+            // 플러시(flush)
             /*
-            영속성 컨텍스트(entityManager)안의 1차 캐시에 엔티티와 스냅샷(값이 처음 들어온 시점)이 저장되어 있는데,
-            엔티티를 변경했을때, JPA는 엔티티와 스냅샷을 비교한다.
-            값이 바뀌었다면 UPDATE SQL을 생성해 쓰기 지연 SQL 저장소에 만들어둔다.
-            그리고 UPDATE를 DB에 반영한뒤, 커밋하게 된다.
-            엔티티 값을 바꾸고 em.persist() 를 따로 호출할 필요가 없음~!
+            - 영속성 컨텍스트의 변경내용을 DB에 반영하는 것
+            플러시 발생 시, - 변경 감지
+                          - 수정된 엔티티 쓰기 지연 SQL 저장소에 등록
+                          - 쓰기 지연 SQL 저장소의 쿼리를 DB에 전송 (등록,수정,삭제 쿼리)
              */
-            Member member = em.find(Member.class, 150L);    // 영속성 엔티티 조회
-            member.setName("ZZZ");  // 영속 엔티티 수정
 
+            Member member = new Member(200L, "member200");
+            em.persist(member);
+
+            em.flush();     // 커밋되기전에 쿼리 호출. 원래 플러시는 트랜잭션 커밋 시 자동 호출
+
+            System.out.println("==================");
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
