@@ -16,15 +16,17 @@ public class JpaMain {
         tx.begin();
 
         try {
-            // 트랜잭션을 지원하는 쓰기 지연
-            Member member1 = new Member(150L, "A");
-            Member member2 = new Member(160L, "B");
+            // 변경 감지
+            /*
+            영속성 컨텍스트(entityManager)안의 1차 캐시에 엔티티와 스냅샷(값이 처음 들어온 시점)이 저장되어 있는데,
+            엔티티를 변경했을때, JPA는 엔티티와 스냅샷을 비교한다.
+            값이 바뀌었다면 UPDATE SQL을 생성해 쓰기 지연 SQL 저장소에 만들어둔다.
+            그리고 UPDATE를 DB에 반영한뒤, 커밋하게 된다.
+            엔티티 값을 바꾸고 em.persist() 를 따로 호출할 필요가 없음~!
+             */
+            Member member = em.find(Member.class, 150L);    // 영속성 엔티티 조회
+            member.setName("ZZZ");  // 영속 엔티티 수정
 
-            em.persist(member1);
-            em.persist(member2);
-            // 여기까지 INSERT SQL을 데이터베이스에 보내지 않는다.
-
-            // 커밋하는 순간 데이터베이스에 INSERT SQL을 보낸다.
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
