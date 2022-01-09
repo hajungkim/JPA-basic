@@ -16,17 +16,13 @@ public class JpaMain {
         tx.begin();
 
         try {
-            // 준영속 상태
-            /*
-            - 영속 상태의 엔티티가 영속성 컨텍스트에서 분리(detached)
-            - 영속성 컨텍스트가 제공하는 기능을 사용 못함
-             */
-            Member member = em.find(Member.class, 150L);
-            member.setName("AAAAA");
+            Member member = new Member();
+            member.setId(3L);
+            member.setUsername("C");
+            member.setRoleType(RoleType.GUEST);
 
-            em.detach(member);  // 엔티티를 분리했기 때문에 update 쿼리가 실행되지 않는다.
+            em.persist(member);
 
-            System.out.println("==================");
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
